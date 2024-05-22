@@ -1,19 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
+import 'dart:async';
 //import 'package:ionicons/ionicons.dart';
 import 'dart:convert';
-import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import './readings1.dart';
 import './readings2.dart';
 import './readingsrooms.dart';
 
-
-
 class Alerts extends StatelessWidget {
 //class Alerts extends StatefulWidget {
   const Alerts({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     const appTitle = 'Alertas';
@@ -30,6 +30,7 @@ class Alerts extends StatelessWidget {
 
 class AlertsMain extends StatefulWidget {
   const AlertsMain({Key? key}) : super(key: key);
+
   @override
   AlertsMainState createState() {
     return AlertsMainState();
@@ -42,40 +43,49 @@ class AlertsMainState extends State<AlertsMain> {
   DateTime selectedDate = DateTime.now();
   var mostRecentAlert = 0;
 
-  var tableFields = ['Mensagem', 'Leitura', 'Sala', 'Sensor', 'TipoAlerta', 'Hora', 'HoraEscrita'];
+  var tableFields = [
+    'Mensagem',
+    'Leitura',
+    'Sala',
+    'Sensor',
+    'TipoAlerta',
+    'Hora',
+    'HoraEscrita'
+  ];
   var tableAlerts = <int, List<String>>{};
 
   int _selectedIndex = 0;
+
   Future<void> _onItemTapped(int index) async {
     setState(() {
       _selectedIndex = index;
-
     });
     mostRecentAlert = 0;
     tableAlerts.clear();
-    if (index==0) {
-    Navigator.push(
-      context,
-          MaterialPageRoute(builder: (context) => const Readings1()),
-    );}
-    if (index==1) {
+    if (index == 0) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Readings1()),
+      );
+    }
+    if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const Readings2()),
-      );}
-    if (index==2) {
+      );
+    }
+    if (index == 2) {
       //await new Future.delayed(const Duration(seconds : 1));
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const readingsrooms()),
-
-      );}
+      );
+    }
   }
-
 
   @override
   void initState() {
-    const oneSec = Duration(seconds:1);
+    const oneSec = Duration(seconds: 1);
     timer = Timer.periodic(oneSec, (Timer t) => getAlerts());
     super.initState();
   }
@@ -87,14 +97,14 @@ class AlertsMainState extends State<AlertsMain> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: <Widget>[
-            //  ElevatedButton(
-             //   onPressed: () {
+              //  ElevatedButton(
+              //   onPressed: () {
               //    selectDate(context);
               //  },
               //  child: const Text("Choose Date"),
               //U),
-             // Text(
-             //     "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"),
+              // Text(
+              //     "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}"),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
@@ -105,42 +115,38 @@ class AlertsMainState extends State<AlertsMain> {
             ],
           ),
         ),
-
-    bottomNavigationBar: BottomNavigationBar(
-      //currentIndex:currentIndex,
-      //onTap:(index)=>setState(() => currentIndex = index),
-      iconSize:40,
-      selectedFontSize:16,
-      unselectedFontSize:16,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-      items: [
-        BottomNavigationBarItem(
-          icon:Icon(Icons.sensors),
-          label:'Temp Sensor 1',
-          backgroundColor:Colors.blue,
-        ),
-        BottomNavigationBarItem(
-          icon:Icon(Icons.sensors),
-          //<ion-icon name="thermometer-outline"></ion-icon>
-          label:'Temp Sensor 2',
-          backgroundColor:Colors.blue,
-        ),
-        BottomNavigationBarItem(
-          icon:Icon(Icons.gesture),
-          label:'Mouses/Room',
-          backgroundColor:Colors.blue,
-        ),
-      ],
-        type: BottomNavigationBarType.shifting,
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        //iconSize: 40,
-        onTap: _onItemTapped,
-        elevation: 5
-    )
-
-    );
+        bottomNavigationBar: BottomNavigationBar(
+            //currentIndex:currentIndex,
+            //onTap:(index)=>setState(() => currentIndex = index),
+            iconSize: 40,
+            selectedFontSize: 16,
+            unselectedFontSize: 16,
+            showSelectedLabels: true,
+            showUnselectedLabels: true,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.sensors),
+                label: 'Temp Sensor 1',
+                backgroundColor: Colors.blue,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.sensors),
+                //<ion-icon name="thermometer-outline"></ion-icon>
+                label: 'Temp Sensor 2',
+                backgroundColor: Colors.blue,
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.gesture),
+                label: 'Mouses/Room',
+                backgroundColor: Colors.blue,
+              ),
+            ],
+            type: BottomNavigationBarType.shifting,
+            currentIndex: _selectedIndex,
+            selectedItemColor: Colors.black,
+            //iconSize: 40,
+            onTap: _onItemTapped,
+            elevation: 5));
   }
 
   selectDate(BuildContext context) async {
@@ -170,9 +176,9 @@ class AlertsMainState extends State<AlertsMain> {
     var response = await http
         .post(Uri.parse(alertsURL), body: {'username': username, 'date': date});
     if (response.statusCode == 200) {
-
       var jsonData = json.decode(response.body);
-      var alerts = jsonData["alerts"];;
+      var alerts = jsonData["alerts"];
+      ;
       if (alerts != null && alerts.length > 0) {
         setState(() {
           tableAlerts.clear();
@@ -202,15 +208,16 @@ class AlertsMainState extends State<AlertsMain> {
       var key = tableAlerts.keys.elementAt(i);
       var alertRow = <DataCell>[];
       tableAlerts[key]?.forEach((alertField) {
-        if (key>mostRecentAlert) {
-          alertRow.add(DataCell(Text(alertField, style: const TextStyle(color: Colors.blue))));
+        if (key > mostRecentAlert) {
+          alertRow.add(DataCell(
+              Text(alertField, style: const TextStyle(color: Colors.blue))));
         } else {
           alertRow.add(DataCell(Text(alertField)));
         }
       });
       alertsList.add(DataRow(cells: alertRow));
     }
-    mostRecentAlert = tableAlerts.keys.elementAt(tableAlerts.length-1);
+    mostRecentAlert = tableAlerts.keys.elementAt(tableAlerts.length - 1);
     return alertsList;
   }
 
@@ -227,5 +234,4 @@ class AlertsMainState extends State<AlertsMain> {
     timer.cancel();
     super.dispose();
   }
-
 }

@@ -1,8 +1,9 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'dart:convert';
 import './alerts.dart';
 
 void main() => runApp(const Login());
@@ -49,8 +50,8 @@ class LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
   final usernameController = TextEditingController(text: "root");
   final passwordController = TextEditingController();
-  final ipController = TextEditingController(text:"192.168.1.184");
-  final portController = TextEditingController(text:"80");
+  final ipController = TextEditingController(text: "192.168.1.184");
+  final portController = TextEditingController(text: "80");
 
   @override
   void dispose() {
@@ -75,7 +76,7 @@ class LoginFormState extends State<LoginForm> {
             //initialValue: 'root',
             textAlign: TextAlign.center,
             decoration: const InputDecoration(
-            labelText: 'Username',
+              labelText: 'Username',
             ),
             // The validator receives the text that the user has entered.
             validator: (value) {
@@ -130,8 +131,12 @@ class LoginFormState extends State<LoginForm> {
     );
   }
 
-   validateLogin() async {
-    String loginURL = "http://" + ipController.text.trim() + ":" + portController.text.trim() + "/scripts/validateLogin.php";
+  validateLogin() async {
+    String loginURL = "http://" +
+        ipController.text.trim() +
+        ":" +
+        portController.text.trim() +
+        "/scripts/validateLogin.php";
     // String loginURL = "http://192.168.1.184:80/scripts/validateLogin.php";
     var response;
     print(loginURL);
@@ -150,9 +155,9 @@ class LoginFormState extends State<LoginForm> {
         },
       );
     }
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
-      if(jsonData["success"]){
+      if (jsonData["success"]) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('username', usernameController.text.trim());
         await prefs.setString('password', passwordController.text.trim());

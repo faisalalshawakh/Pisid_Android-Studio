@@ -1,14 +1,11 @@
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
-
-import 'dart:convert';
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
-
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Readings3 extends StatelessWidget {
   const Readings3({Key? key}) : super(key: key);
@@ -27,33 +24,24 @@ class Readings3 extends StatelessWidget {
   }
 }
 
-
 class DataItem {
   int x;
   double y1;
   double y2;
   double y3;
+
   DataItem(
       {required this.x, required this.y1, required this.y2, required this.y3});
 }
 
-
 class ReadingsMain extends StatefulWidget {
   const ReadingsMain({Key? key}) : super(key: key);
-
-
 
   @override
   ReadingsMainState createState() {
     return ReadingsMainState();
   }
-
-
-
-
 }
-
-
 
 class ReadingsMainState extends State<ReadingsMain> {
   final List<Color> gradientColors = [
@@ -70,17 +58,12 @@ class ReadingsMainState extends State<ReadingsMain> {
 
   @override
   void initState() {
-    const interval = Duration(seconds:1);
+    const interval = Duration(seconds: 1);
     timer = Timer.periodic(interval, (Timer t) => getReadings());
     super.initState();
   }
 
   @override
-
-
-
-
-
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
@@ -152,9 +135,10 @@ class ReadingsMainState extends State<ReadingsMain> {
     String? ip = prefs.getString('ip');
     String? port = prefs.getString('port');
 
-    String readingsURL = "http://" + ip! + ":" + port! + "/scripts/getMousesRoom.php";
-    var response = await http
-        .post(Uri.parse(readingsURL), body: {'username': username, 'password': password});
+    String readingsURL =
+        "http://" + ip! + ":" + port! + "/scripts/getMousesRoom.php";
+    var response = await http.post(Uri.parse(readingsURL),
+        body: {'username': username, 'password': password});
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -169,14 +153,14 @@ class ReadingsMainState extends State<ReadingsMain> {
         if (data != null && data.length > 0) {
           for (var reading in data) {
             double readingTime = double.parse(reading["Room"].toString());
-              var value = double.parse(reading["TotalMouses"].toString());
-              print("VALUE: " + value.toString());
-              readingsTimes.add(readingTime);
-              readingsValues.add(value);
+            var value = double.parse(reading["TotalMouses"].toString());
+            print("VALUE: " + value.toString());
+            readingsTimes.add(readingTime);
+            readingsValues.add(value);
           }
           if (readingsValues.isNotEmpty) {
-            minY = readingsValues.reduce(min)-1;
-            maxY = readingsValues.reduce(max)+1;
+            minY = readingsValues.reduce(min) - 1;
+            maxY = readingsValues.reduce(max) + 1;
           }
         }
       });
@@ -186,8 +170,9 @@ class ReadingsMainState extends State<ReadingsMain> {
 
   listReadings() {
     var spots = <FlSpot>[];
-    for (var i=0; i<readingsValues.length;i++) {
-      spots.add(FlSpot(readingsTimes.elementAt(i), readingsValues.elementAt(i)));
+    for (var i = 0; i < readingsValues.length; i++) {
+      spots
+          .add(FlSpot(readingsTimes.elementAt(i), readingsValues.elementAt(i)));
     }
     return spots;
   }
@@ -197,5 +182,4 @@ class ReadingsMainState extends State<ReadingsMain> {
     timer.cancel();
     super.dispose();
   }
-
 }

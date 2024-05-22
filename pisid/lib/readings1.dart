@@ -1,11 +1,11 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
-import 'dart:convert';
-import 'dart:async';
-import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Readings1 extends StatelessWidget {
   const Readings1({Key? key}) : super(key: key);
@@ -48,7 +48,7 @@ class ReadingsMainState extends State<ReadingsMain> {
 
   @override
   void initState() {
-    const interval = Duration(seconds:1);
+    const interval = Duration(seconds: 1);
     timer = Timer.periodic(interval, (Timer t) => getReadings());
     super.initState();
   }
@@ -125,9 +125,10 @@ class ReadingsMainState extends State<ReadingsMain> {
     String? ip = prefs.getString('ip');
     String? port = prefs.getString('port');
 
-    String readingsURL = "http://" + ip! + ":" + port! + "/scripts/getTemp1.php";
-    var response = await http
-        .post(Uri.parse(readingsURL), body: {'username': username, 'password': password});
+    String readingsURL =
+        "http://" + ip! + ":" + port! + "/scripts/getTemp1.php";
+    var response = await http.post(Uri.parse(readingsURL),
+        body: {'username': username, 'password': password});
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
@@ -141,11 +142,15 @@ class ReadingsMainState extends State<ReadingsMain> {
           for (var reading in data) {
             DateTime readingTime = DateTime.parse(reading["Hora"].toString());
             DateTime currentTime = DateTime.now();
-            double timeDiff = double.parse((currentTime.difference(readingTime).inSeconds/60).toStringAsFixed(2));
+            double timeDiff = double.parse(
+                (currentTime.difference(readingTime).inSeconds / 60)
+                    .toStringAsFixed(2));
             print("CURRENT: " + currentTime.toString());
             print("READING: " + readingTime.toString());
             print("DIFF: " + timeDiff.toString());
-            if (timeDiff>0.0 && timeDiff<timeLimit && !readingsTimes.contains(timeDiff)) {
+            if (timeDiff > 0.0 &&
+                timeDiff < timeLimit &&
+                !readingsTimes.contains(timeDiff)) {
               var value = double.parse(reading["Leitura"].toString());
               print("VALUE: " + value.toString());
               readingsTimes.add(timeDiff);
@@ -153,8 +158,8 @@ class ReadingsMainState extends State<ReadingsMain> {
             }
           }
           if (readingsValues.isNotEmpty) {
-            minY = readingsValues.reduce(min)-1;
-            maxY = readingsValues.reduce(max)+1;
+            minY = readingsValues.reduce(min) - 1;
+            maxY = readingsValues.reduce(max) + 1;
           }
         }
       });
@@ -164,8 +169,9 @@ class ReadingsMainState extends State<ReadingsMain> {
 
   listReadings() {
     var spots = <FlSpot>[];
-    for (var i=0; i<readingsValues.length;i++) {
-      spots.add(FlSpot(readingsTimes.elementAt(i), readingsValues.elementAt(i)));
+    for (var i = 0; i < readingsValues.length; i++) {
+      spots
+          .add(FlSpot(readingsTimes.elementAt(i), readingsValues.elementAt(i)));
     }
     return spots;
   }
@@ -175,5 +181,4 @@ class ReadingsMainState extends State<ReadingsMain> {
     timer.cancel();
     super.dispose();
   }
-
 }
